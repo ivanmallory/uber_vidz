@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Contact Us</title>
+        <title>Welcome!</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     </head>
     <body>
@@ -15,27 +15,37 @@
                 </div>
                 <div class="col-4 text-center pt-4">
                     <a class="h5 text-decoration-none text-danger p-3 border-right border-dark" href="/about">About</a>
-                    <a class="h5 text-decoration-none text-danger p-3 border-right border-dark" href="/registration">Sign In</a>
+                    <a class="h5 text-decoration-none text-danger p-3 border-right border-dark" href="/logout">Logout</a>
                     <a class="h5 text-decoration-none text-danger p-3 border-right border-dark" href="/contact">Contact Us</a>
                 </div>
             </div>
             <hr>
             <div class="row m-1">
-                <div class="col-10">
-                    <h2 class="text-primary mb-3">Contact Us</h2>
-                    <h5><span class="text-primary">Phone:</span> 1(800)555-1337</h3>
-                    <h5><span class="text-primary">Email:</span> general@ubervidz.com</h5>
-                    <h5><span class="text-primary">Address:</span> 2020 Wisconsin Avenue, Milwaukee, WI 53202</h5>
-                    <hr>
-                    <p>Have any comments or concerns? Feel free to contact us below and we'll respond back as soon as possible!</p>
-                    <form action="/contact" method="GET">
-                        <p>Name: <input class="form-control w-50" type="text" name="name"></p>
-                        <p>Email: <input class="form-control w-50" type="text" name="email"></p>
-                        <p>Comments: <textarea class="form-control w-50" type="text" name="comments"></textarea>
-                        <input class="mt-3" type="submit" value="Submit">
+                <h2 class="text-primary">Welcome {{user_fn['first_name']}} {{user_fn['last_name']}}!</h2>
+            </div>
+            <hr>
+            <div class="row m-1">
+                <div class="col">
+                    <h3>Your Videos</h3>
+                </div>
+                <div class="col-4">
+                    <form action="/upload_video" method="POST" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="file">Upload Video:</label>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" name="video" id="video">
+                                <label class="custom-file-label" for ="video">Select a video...</label>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <button class="btn bg-primary text-white" type="submit" value="Submit">Upload</button>
+                        </div>
                     </form>
                 </div>
+                    
+                </div>
             </div>
+
         </div>
     </body>
 </html>
