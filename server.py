@@ -127,8 +127,12 @@ def dashboard_page():
     }
     result = mysql.query_db(query,data)
 
+    mysql = connectToMySQL("uber_vidz")
+    query = "SELECT * FROM videos"
+    all_videos = mysql.query_db(query,data)
+
     if result:
-        return render_template("dashboard.html", user_fn = result[0], filename = "Fly_Me_to_the_Moon.mp4")
+        return render_template("dashboard.html", user_fn = result[0], all_videos = all_videos)
     else:
         return render_template("login.html") 
 
@@ -151,7 +155,12 @@ def upload_file():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             
             mysql = connectToMySQL("uber_vidz")
+            query = "INSERT into videos(pathway, created_at, updated_at) VALUES (%(pw)s, NOW(), NOW());"
 
+            data = {
+                "pw": request.form['file'],
+            }
+            mysql.query_db(query, data)
             return redirect(request.url)
     
     return redirect('/landing')
