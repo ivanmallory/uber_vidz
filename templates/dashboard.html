@@ -4,11 +4,11 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Welcome!</title>
+        <title>Welcome</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     </head>
     <body>
-        <div class="container jumbotron-fluid bg-light m-3 p-3">
+        <div class="container jumbotron bg-light m-3 p-3">
             <div class="row m-1">
                 <div class="col-8 bg-dark rounded">
                     <a class="h1 text-primary text-decoration-none text-center p-3 d-inline-block" href="/">Uber<span class="text-white">Vidz</span></a>
@@ -33,19 +33,56 @@
                         <div class="form-group">
                             <label for="file">Upload Video:</label>
                             <div class="custom-file">
-                                <input type="file" class="custom-file-input" name="video" id="video">
+                                <input type="file" class="custom-file-input" name="file" id="video">
                                 <label class="custom-file-label" for ="video">Select a video...</label>
                             </div>
                         </div>
                         <div class="text-right">
-                            <button class="btn bg-primary text-white" type="submit" value="Submit">Upload</button>
+                            <button onclick="move()"class="btn bg-primary text-white" type="submit" value="submit">Upload</button>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" id="myBar">0%</div>
+                            </div>                              
                         </div>
                     </form>
                 </div>
-                    
+            </div>
+            <div class="row m-1">
+                <div class="col-5">
+                    {% for video in all_videos %}
+                    <video width="340" height="240" controls="autoplay">
+                        <source src="/static/videos/{{all_videos['pathway']}}" type="video/mp4">
+                    </video>
+                    {% endfor %}
                 </div>
             </div>
-
+            {% with messages = get_flashed_messages() %}
+                    {% if messages %}                            
+                        {% for message in messages %}            
+                            <p class="bg-danger text-white text-center p-3 rounded">{{message}}</p>                   
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
         </div>
     </body>
+    <script>
+        var i = 0;
+        function move() {
+          if (i == 0) {
+            i = 1;
+            var elem = document.getElementById("myBar");
+            var width = 10;
+            var id = setInterval(frame, 40);
+            function frame() {
+              if (width >= 100) {
+                clearInterval(id);
+                i = 0;
+              } else {
+                width++;
+                elem.style.width = width + "%";
+                elem.innerHTML = width  + "%";
+              }
+            }
+          }
+        }
+    </script>
 </html>
