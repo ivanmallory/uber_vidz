@@ -17,7 +17,11 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
 def main():
-    return render_template("main.html")
+    mysql = connectToMySQL("uber_vidz")
+    query = "SELECT pathway FROM videos;"
+    all_pathways = mysql.query_db(query)
+
+    return render_template("main.html", all_pathways = all_pathways)
 
 @app.route('/about')
 def about():
@@ -128,11 +132,11 @@ def dashboard_page():
     result = mysql.query_db(query,data)
 
     mysql = connectToMySQL("uber_vidz")
-    query = "SELECT * FROM videos"
-    all_videos = mysql.query_db(query,data)
+    query = "SELECT pathway FROM videos;"
+    all_pathways = mysql.query_db(query,data)
 
     if result:
-        return render_template("dashboard.html", user_fn = result[0], all_videos = all_videos)
+        return render_template("dashboard.html", user_fn = result[0], all_pathways = all_pathways)
     else:
         return render_template("login.html") 
 
@@ -153,16 +157,16 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            
+        
             mysql = connectToMySQL("uber_vidz")
             query = "INSERT into videos(pathway, created_at, updated_at) VALUES (%(pw)s, NOW(), NOW());"
 
             data = {
-                "pw": request.form['file'],
+                "pw": filename
             }
             mysql.query_db(query, data)
             return redirect(request.url)
-    
+        
     return redirect('/landing')
 
 @app.route('/video_page/<video>')
@@ -173,6 +177,13 @@ def video_page(video):
         'uid': session['user_id']
     }
     result = mysql.query_db(query,data)
+
+    mysql = connectToMySQL("uber_vidz")
+    query = "SELECT pathway FROM videos WHERE pathway = %(vpw)s;"
+    data = {
+        "vpw": video
+    }
+    specific_video = mysql.query_db(query,data)
 
     mysql = connectToMySQL("uber_vidz")
     query = "SELECT comments.id_comments, comments.content, comments.created_at FROM comments JOIN users on comments.user_id = users.id_users ORDER BY created_at DESC;"
@@ -187,14 +198,14 @@ def video_page(video):
     liked_comments = [result['comment_id'] for result in results]
 
     if result:
-        return render_template("video.html", user_fn = result[0], all_comments = all_comments, liked_comments = liked_comments)
+        return render_template("video.html", user_fn = result[0], all_comments = all_comments, liked_comments = liked_comments, specific_video = specific_video[0])
     else:
         return render_template("video.html")
 
-@app.route('/write_comment', methods=["POST"])
-def write_comment():
+@app.route('/write_comment/<video>', methods=["POST"])
+def write_comment(video):
     is_valid = True
-    if len(request.form['author']) < 3:
+    if len(request.form['comment']) < 3:
         is_valid = False
         flash("Author must be greater than 3 characters")
     if len(request.form['comment']) > 255:
@@ -203,15 +214,16 @@ def write_comment():
 
     if is_valid:
         mysql = connectToMySQL("uber_vidz")
-        query = "INSERT into comments(content, user_id, created_at, updated_at) VALUES (%(cc)s, %(u_id)s, NOW(), NOW());"
+        query = "INSERT into comments(content, user_id, video_id, created_at, updated_at) VALUES (%(cc)s, %(u_id)s, %(v_id)s, NOW(), NOW());"
 
         data = {
             "cc": request.form['comment'],
             "u_id": session['user_id'],
+            "v_id": video
         }
         mysql.query_db(query, data)
         
-    return redirect("/video")
+    return redirect('/')
 
 @app.route('/contact')
 def contact_us():

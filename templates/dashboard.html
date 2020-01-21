@@ -38,22 +38,20 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <button onclick="move()"class="btn bg-primary text-white" type="submit" value="submit">Upload</button>
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" id="myBar">0%</div>
-                            </div>                              
+                            <button class="btn bg-primary text-white" type="submit" value="submit">Upload</button>                             
                         </div>
                     </form>
                 </div>
             </div>
             <div class="row m-1">
-                <div class="col-5">
-                    {% for video in all_videos %}
+                {% for pathway in all_pathways %}
+                <div class="col-4">
                     <video width="340" height="240" controls="autoplay">
-                        <source src="/static/videos/{{all_videos['pathway']}}" type="video/mp4">
+                        <source src="/static/videos/{{pathway.pathway}}" type="video/mp4">
                     </video>
-                    {% endfor %}
+                    <h4><a class="text-decoration-none text-dark" href="/video_page/{{pathway.pathway}}">{{pathway.pathway}}</a></h4>
                 </div>
+                {% endfor %}
             </div>
             {% with messages = get_flashed_messages() %}
                     {% if messages %}                            
@@ -64,25 +62,4 @@
                 {% endwith %}
         </div>
     </body>
-    <script>
-        var i = 0;
-        function move() {
-          if (i == 0) {
-            i = 1;
-            var elem = document.getElementById("myBar");
-            var width = 10;
-            var id = setInterval(frame, 40);
-            function frame() {
-              if (width >= 100) {
-                clearInterval(id);
-                i = 0;
-              } else {
-                width++;
-                elem.style.width = width + "%";
-                elem.innerHTML = width  + "%";
-              }
-            }
-          }
-        }
-    </script>
 </html>

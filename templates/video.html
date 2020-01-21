@@ -24,12 +24,17 @@
                 <h2 class="text-primary p-3"></h2>
             </div>
             <div class="row m-1">
-                <video></video>
+                <div class="col-6 m-auto text-center">
+                    <h3>{{specific_video.pathway}}</h3>
+                    <video width="540" height="440" controls="autoplay">
+                        <source src="/static/videos/{{specific_video.pathway}}" type="video/mp4">
+                    </video>
+                </div>
             </div>
             <div class="row">
                 <div class="col ml-5">
-                    <form action="/write_comment" method="POST">
-                        <p>Comments:<textarea class="form-control w-50 m-4" type="text" placeholder="Comments"></textarea></p>
+                    <form action="/write_comment/{{video}}" method="POST">
+                        <p>Comments:<textarea class="form-control w-50 m-4" type="text" placeholder="Comments" name="comment"></textarea></p>
                         <button type="submit" class="btn btn-primary ml-4">Post</button>
                     </form>
                     <hr>
