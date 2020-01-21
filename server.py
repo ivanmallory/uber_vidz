@@ -75,7 +75,6 @@ def create_user():
         is_valid = False
         flash('Password should have at least one lowercase letter') 
     
-    
     mysql = connectToMySQL("uber_vidz")
     validate_email_query = 'SELECT id_users FROM users WHERE email=%(email)s;'
     form_data = {
@@ -132,7 +131,7 @@ def dashboard_page():
     result = mysql.query_db(query,data)
 
     mysql = connectToMySQL("uber_vidz")
-    query = "SELECT pathway FROM videos;"
+    query = "SELECT videos.pathway, videos.user_id, users.first_name, users.last_name FROM videos JOIN users on videos.user_id = users.id_users;"
     all_pathways = mysql.query_db(query,data)
 
     if result:
@@ -159,10 +158,11 @@ def upload_file():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         
             mysql = connectToMySQL("uber_vidz")
-            query = "INSERT into videos(pathway, created_at, updated_at) VALUES (%(pw)s, NOW(), NOW());"
+            query = "INSERT into videos(pathway, user_id, created_at, updated_at) VALUES (%(pw)s, %(u_id)s, NOW(), NOW());"
 
             data = {
-                "pw": filename
+                "pw": filename,
+                "u_id": session['user_id']
             }
             mysql.query_db(query, data)
             return redirect(request.url)
@@ -186,7 +186,7 @@ def video_page(video):
     specific_video = mysql.query_db(query,data)
 
     mysql = connectToMySQL("uber_vidz")
-    query = "SELECT comments.id_comments, comments.content, comments.created_at FROM comments JOIN users on comments.user_id = users.id_users ORDER BY created_at DESC;"
+    query = "SELECT comments.id_comments, comments.content, comments.user_id, comments.created_at, users.first_name, users.last_name FROM comments JOIN users on comments.user_id = users.id_users ORDER BY created_at DESC;"
     all_comments = mysql.query_db(query)
 
     mysql = connectToMySQL("uber_vidz")
@@ -205,29 +205,75 @@ def video_page(video):
 @app.route('/write_comment/<video>', methods=["POST"])
 def write_comment(video):
     is_valid = True
+    if 'user_id' not in session: 
+        return redirect("/")
+
     if len(request.form['comment']) < 3:
         is_valid = False
-        flash("Author must be greater than 3 characters")
+        flash("Comment must be greater than 3 characters")
     if len(request.form['comment']) > 255:
         is_valid = False
         flash("Comment must be less than 255 characters")
 
     if is_valid:
         mysql = connectToMySQL("uber_vidz")
-        query = "INSERT into comments(content, user_id, video_id, created_at, updated_at) VALUES (%(cc)s, %(u_id)s, %(v_id)s, NOW(), NOW());"
+        query = "INSERT into comments(content, user_id, created_at, updated_at) VALUES (%(cc)s, %(u_id)s, NOW(), NOW());"
 
         data = {
             "cc": request.form['comment'],
             "u_id": session['user_id'],
-            "v_id": video
         }
         mysql.query_db(query, data)
         
-    return redirect('/')
+    return redirect(f"/video_page/{video}")
+
+@app.route('/like_comment/<video>')
+def like_comment(comment_id, video):
+    if 'user_id' not in session: 
+        return redirect("/")
+
+    mysql = connectToMySQL("uber_vidz")
+    query = "INSERT INTO likes (user_id, comment_id, created_at, updated_at) VALUES (%(user_id)s, %(comment_id)s, NOW(), NOW());"
+    data = {
+        'user_id': session['user_id'],
+        'comment_id': comment_id
+    }
+    mysql.query_db(query,data)
+    return redirect(f"/video_page/{video}")
+
+@app.route('/unlike_comment/<comment_id>')
+def unlike_comment(comment_id):
+    if 'user_id' not in session: 
+        return redirect("/")
+
+    mysql = connectToMySQL("uber_vidz")
+    query = "DELETE FROM likes WHERE user_id = %(user_id)s AND comment_id = %(comment_id)s;"
+    data = {
+        'user_id': session['user_id'],
+        'comment_id': comment_id
+    }
+    mysql.query_db(query, data)
+    return redirect("/")
 
 @app.route('/contact')
 def contact_us():
     return render_template("contact_us.html")
+
+@app.route('/leave_comments', methods=["POST"])
+def leave_comments():
+    mysql = connectToMySQL("uber_vidz")
+    query = "INSERT into feedback(first_name, last_name, email, content, created_at) VALUES (%(fn)s, %(ln)s, %(em)s, %(fb)s, NOW());"
+    
+    data = {
+        "fn": request.form['fname'],
+        "ln": request.form['lname'],
+        "em": request.form['email'],
+        "fb": request.form['content'],
+    }
+    mysql.query_db(query,data)
+    
+    flash("Thank you for your feedback!")
+    return redirect("/contact")
 
 @app.route('/logout')
 def logout():

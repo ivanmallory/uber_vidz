@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     </head>
     <body>
-        <div class="container jumbotron-fluid bg-light m-3 p-3">
+        <div class="container jumbotron bg-light m-auto p-3">
             <div class="row m-1">
                 <div class="col-8 bg-dark rounded">
                     <a class="h1 text-primary text-decoration-none text-center p-3 d-inline-block" href="/">Uber<span class="text-white">Vidz</span></a>
@@ -33,19 +33,31 @@
             </div>
             <div class="row">
                 <div class="col ml-5">
-                    <form action="/write_comment/{{video}}" method="POST">
+                    <form action="/write_comment/{{specific_video.pathway}}" method="POST">
                         <p>Comments:<textarea class="form-control w-50 m-4" type="text" placeholder="Comments" name="comment"></textarea></p>
                         <button type="submit" class="btn btn-primary ml-4">Post</button>
                     </form>
                     <hr>
                     {% for comment in all_comments %}
-                    <p>{{comment['first_name']}} {{comment['last_name']}} says: {{comment['content']}}</p>
-                        {% if comment['id_comments'] in liked_comments %}
-                        <p><a href="/unlike_comment/{{comment['id_comments']}}"><button class="btn bg-primary text-white">Unlike</button></a></p>
-                        {% else %}
-                        <p><a href="/like_comment/{{comment['id_comments']}}"><button class="btn bg-primary text-white">Like</button></a></p>
-                        {% endif %}
+                    <p class="font-weight-bold">{{comment['first_name']}} {{comment['last_name']}} wrote:</p>
+                        <div class="card">
+                            <p class="card-body">{{comment['content']}}</p>
+                        </div>
+                        <div class="text-right mt-2">
+                            {% if comment['id_comments'] in liked_comments %}
+                            <p><a href="/unlike_comment/{{specific_video.pathway}}"><button class="btn bg-danger text-white">Unlike</button></a></p>
+                            {% else %}
+                            <p><a href="/like_comment/{{specific_video.pathway}}"><button class="btn bg-primary text-white">Like</button></a></p>
+                            {% endif %}
+                        </div>
                     {% endfor %}
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}                            
+                            {% for message in messages %}            
+                                <h5 class="bg-danger text-white text-center p-2 rounded">{{message}}</h5>                   
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
                 </div>
             </div>
         </div>
