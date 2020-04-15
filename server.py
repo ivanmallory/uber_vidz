@@ -18,7 +18,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route('/')
 def main():
     mysql = connectToMySQL("uber_vidz")
-    query = "SELECT pathway FROM videos;"
+    query = "SELECT videos.name, videos.pathway FROM videos;"
     all_pathways = mysql.query_db(query)
 
     return render_template("main.html", all_pathways = all_pathways)
@@ -131,7 +131,7 @@ def dashboard_page():
     result = mysql.query_db(query,data)
 
     mysql = connectToMySQL("uber_vidz")
-    query = "SELECT videos.pathway, videos.user_id, users.first_name, users.last_name FROM videos JOIN users on videos.user_id = users.id_users;"
+    query = "SELECT videos.name, videos.pathway, videos.user_id, users.first_name, users.last_name FROM videos JOIN users on videos.user_id = users.id_users;"
     all_pathways = mysql.query_db(query,data)
 
     if result:
@@ -158,10 +158,11 @@ def upload_file():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         
             mysql = connectToMySQL("uber_vidz")
-            query = "INSERT into videos(pathway, user_id, created_at, updated_at) VALUES (%(pw)s, %(u_id)s, NOW(), NOW());"
+            query = "INSERT into videos(pathway, name, user_id, created_at, updated_at) VALUES (%(pw)s, %(v_name)s, %(u_id)s, NOW(), NOW());"
 
             data = {
                 "pw": filename,
+                "v_name": request.form['name'],
                 "u_id": session['user_id']
             }
             mysql.query_db(query, data)
@@ -169,8 +170,8 @@ def upload_file():
         
     return redirect('/landing')
 
-@app.route('/video_page/<video>')
-def video_page(video):
+@app.route('/video_page/<video_id>')
+def video_page(video_id):
     mysql = connectToMySQL("uber_vidz")
     query = "SELECT users.first_name, users.last_name FROM users WHERE id_users = %(uid)s"
     data = {
@@ -179,9 +180,9 @@ def video_page(video):
     result = mysql.query_db(query,data)
 
     mysql = connectToMySQL("uber_vidz")
-    query = "SELECT pathway FROM videos WHERE pathway = %(vpw)s;"
+    query = "SELECT videos.id_videos, videos.pathway, videos.name FROM videos WHERE videos.pathway = %(vpw)s;"
     data = {
-        "vpw": video
+        "vpw": video_id
     }
     specific_video = mysql.query_db(query,data)
 
@@ -202,8 +203,8 @@ def video_page(video):
     else:
         return render_template("video.html")
 
-@app.route('/write_comment/<video>', methods=["POST"])
-def write_comment(video):
+@app.route('/write_comment/<video_id>', methods=["POST"])
+def write_comment(video_id):
     is_valid = True
     if 'user_id' not in session: 
         return redirect("/")
@@ -225,10 +226,10 @@ def write_comment(video):
         }
         mysql.query_db(query, data)
         
-    return redirect(f"/video_page/{video}")
+    return redirect(f"/video_page/{video_id}")
 
-@app.route('/like_comment/<video>')
-def like_comment(comment_id, video):
+@app.route('/like_comment/<video_id>/<comment_id>')
+def like_comment(video_id,comment_id):
     if 'user_id' not in session: 
         return redirect("/")
 
@@ -239,10 +240,10 @@ def like_comment(comment_id, video):
         'comment_id': comment_id
     }
     mysql.query_db(query,data)
-    return redirect(f"/video_page/{video}")
+    return redirect(f"/video_page/{video_id}")
 
-@app.route('/unlike_comment/<comment_id>')
-def unlike_comment(comment_id):
+@app.route('/unlike_comment/<video_id>/<comment_id>')
+def unlike_comment(video_id,comment_id):
     if 'user_id' not in session: 
         return redirect("/")
 
@@ -253,7 +254,7 @@ def unlike_comment(comment_id):
         'comment_id': comment_id
     }
     mysql.query_db(query, data)
-    return redirect("/")
+    return redirect(f"/video_page/{video_id}")
 
 @app.route('/contact')
 def contact_us():
