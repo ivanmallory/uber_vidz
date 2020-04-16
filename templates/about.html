@@ -17,18 +17,27 @@
                 </button>
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav ml-auto">
+                        {% if session['user_id'] %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/landing">Dashboard</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Home</a>
+                        </li>
+                        {% endif %}
                         <li class="nav-item">
                             <a class="nav-link" href="/about">About</a>
                         </li>
-                        <!-- {% if session['user_id'] %} --> 
+                        {% if session['user_id'] %}
                         <li class="nav-item">
                             <a class="nav-link" href="/logout">Logout</a>
                         </li>
-                        <!-- {% else %} --> 
+                        {% else %} 
                         <li class="nav-item">
                             <a class="nav-link" href="/registration">Sign In</a>
                         </li>
-                        <!--{% endif %}--> 
+                        {% endif %} 
                         <li class="nav-item">
                             <a class="nav-link" href="/contact">Contact</a>
                         </li>

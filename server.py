@@ -18,7 +18,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route('/')
 def main():
     mysql = connectToMySQL("uber_vidz")
-    query = "SELECT videos.name, videos.pathway FROM videos;"
+    query = "SELECT videos.id_videos, videos.name, videos.pathway, videos.user_id, videos.created_at, users.first_name, users.last_name FROM videos JOIN users on videos.user_id = users.id_users ORDER BY created_at DESC;"
     all_pathways = mysql.query_db(query)
 
     return render_template("main.html", all_pathways = all_pathways)
