@@ -15,7 +15,11 @@
                 </div>
                 <div class="col-4 text-center pt-4">
                     <a class="h5 text-decoration-none text-danger p-3 border-right border-dark" href="/about">About</a>
+                    {% if session['user_id'] %}
+                    <a class="h5 text-decoration-none text-danger p-3 border-right border-dark" href="/logout">Logout</a>
+                    {% else %}
                     <a class="h5 text-decoration-none text-danger p-3 border-right border-dark" href="/registration">Sign In</a>
+                    {% endif %}
                     <a class="h5 text-decoration-none text-danger p-3 border-right border-dark" href="/contact">Contact Us</a>
                 </div>
             </div>
@@ -25,7 +29,7 @@
             </div>
             <div class="row m-1">
                 <div class="col-6 m-auto text-center">
-                    <h3>{{specific_video.pathway}}</h3>
+                    <h3>{{specific_video.name}}</h3>
                     <video width="540" height="440" controls="autoplay">
                         <source src="/static/videos/{{specific_video.pathway}}" type="video/mp4">
                     </video>
@@ -33,10 +37,12 @@
             </div>
             <div class="row">
                 <div class="col ml-5">
+                    {% if session['user_id'] %}
                     <form action="/write_comment/{{specific_video.pathway}}" method="POST">
                         <p>Comments:<textarea class="form-control w-50 m-4" type="text" placeholder="Comments" name="comment"></textarea></p>
                         <button type="submit" class="btn btn-primary ml-4">Post</button>
                     </form>
+                    {% endif %}
                     <hr>
                     {% for comment in all_comments %}
                     <p class="font-weight-bold">{{comment['first_name']}} {{comment['last_name']}} wrote:</p>
@@ -45,9 +51,9 @@
                         </div>
                         <div class="text-right mt-2">
                             {% if comment['id_comments'] in liked_comments %}
-                            <p><a href="/unlike_comment/{{specific_video.pathway}}"><button class="btn bg-danger text-white">Unlike</button></a></p>
+                            <p><a href="/unlike_comment/{{specific_video.pathway}}/{{comment['id_comments']}}"><button class="btn bg-danger text-white">Unlike</button></a></p>
                             {% else %}
-                            <p><a href="/like_comment/{{specific_video.pathway}}"><button class="btn bg-primary text-white">Like</button></a></p>
+                            <p><a href="/like_comment/{{specific_video.pathway}}/{{comment['id_comments']}}"><button class="btn bg-primary text-white">Like</button></a></p>
                             {% endif %}
                         </div>
                     {% endfor %}

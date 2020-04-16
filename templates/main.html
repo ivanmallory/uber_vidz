@@ -15,7 +15,11 @@
                 </div>
                 <div class="col-4 text-center pt-4">
                     <a class="h5 text-decoration-none text-danger p-3 border-right border-dark" href="/about">About</a>
+                    {% if session['user_id'] %}
+                    <a class="h5 text-decoration-none text-danger p-3 border-right border-dark" href="/logout">Logout</a>
+                    {% else %}
                     <a class="h5 text-decoration-none text-danger p-3 border-right border-dark" href="/registration">Sign In</a>
+                    {% endif %}
                     <a class="h5 text-decoration-none text-danger p-3 border-right border-dark" href="/contact">Contact Us</a>
                 </div>
             </div>
@@ -29,7 +33,7 @@
                     <video width="340" height="240" controls="autoplay">
                         <source src="/static/videos/{{pathway.pathway}}" type="video/mp4">
                     </video>
-                    <h4><a class="text-decoration-none text-dark" href="/video_page/{{pathway.pathway}}">{{pathway.pathway}}</a></h4>
+                    <h4><a class="text-decoration-none text-dark" href="/video_page/{{pathway.pathway}}">{{pathway.name}}</a></h4>
                 </div>
                 {% endfor %}
             </div>
