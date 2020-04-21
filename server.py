@@ -173,13 +173,6 @@ def upload_file():
 @app.route('/video_page/<video_id>')
 def video_page(video_id):
     mysql = connectToMySQL("uber_vidz")
-    query = "SELECT users.first_name, users.last_name FROM users WHERE id_users = %(uid)s"
-    data = {
-        'uid': session['user_id']
-    }
-    result = mysql.query_db(query,data)
-
-    mysql = connectToMySQL("uber_vidz")
     query = "SELECT videos.id_videos, videos.pathway, videos.name FROM videos WHERE videos.pathway = %(vpw)s;"
     data = {
         "vpw": video_id
@@ -190,6 +183,16 @@ def video_page(video_id):
     query = "SELECT comments.id_comments, comments.content, comments.user_id, comments.created_at, users.first_name, users.last_name FROM comments JOIN users on comments.user_id = users.id_users ORDER BY created_at DESC;"
     all_comments = mysql.query_db(query)
 
+    if 'user_id' not in session: 
+        return render_template("video.html", all_comments = all_comments, specific_video = specific_video[0])
+
+    mysql = connectToMySQL("uber_vidz")
+    query = "SELECT users.first_name, users.last_name FROM users WHERE id_users = %(uid)s"
+    data = {
+        'uid': session['user_id']
+    }
+    result = mysql.query_db(query,data)
+
     mysql = connectToMySQL("uber_vidz")
     query = "SELECT comment_id FROM likes WHERE user_id = %(user_id)s"
     data = {
@@ -198,10 +201,7 @@ def video_page(video_id):
     results = mysql.query_db(query,data)
     liked_comments = [result['comment_id'] for result in results]
 
-    if result:
-        return render_template("video.html", user_fn = result[0], all_comments = all_comments, liked_comments = liked_comments, specific_video = specific_video[0])
-    else:
-        return render_template("video.html")
+    return render_template("video.html", user_fn = result[0], all_comments = all_comments, liked_comments = liked_comments, specific_video = specific_video[0])
 
 @app.route('/write_comment/<video_id>', methods=["POST"])
 def write_comment(video_id):
