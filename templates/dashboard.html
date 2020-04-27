@@ -84,6 +84,7 @@
                     <div class="col-10">
                         <h3>Your Bio</h3>
                         <p class="bio">Hi there! My name is Ivan Mallory and I am a musician from Milwaukee, Wisconsin.  When I'm not coding, I enjoy playing guitar and writing music with my band Amberstein.  If you ever want to talk about music or code, hit me up!</p>
+                        <hr style="height: 2px; color: grey; background-color: grey;">
                         <h3 class="title">Your Videos</h3>
                     </div>
                     <div class="col-2 align-items-right">
@@ -113,7 +114,7 @@
                             <video width="340" height="240" controls="autoplay">
                                 <source src="/static/videos/{{pathway.pathway}}" type="video/mp4">
                             </video>
-                            <h4><a class="text-decoration-none text-dark" href="/video_page/{{pathway.pathway}}">{{pathway.name}}</a></h4>
+                            <h4><a href="/video_page/{{pathway.pathway}}" class="text-decoration-none text-dark">{{pathway.name}}</a></h4>
                         </div>
                         {% endif %}
                     {% endfor %}

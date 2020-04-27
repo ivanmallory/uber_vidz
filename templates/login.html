@@ -12,10 +12,10 @@
         <div class="container-fluid">
             <nav class="navbar navbar-expand-md navbar-dark bg-dark">
                 <a class="navbar-brand" href="/"><h1>Uber<span>Vidz</span></h1></a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse">
+                <button class="navbar-toggler" type="button" data-toggle="collapse navbar-collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse">
+                <div class="collapse navbar-collapse" id="collapseExample">
                     <ul class="navbar-nav ml-auto">
                         {% if session['user_id'] %}
                         <li class="nav-item">
@@ -46,7 +46,7 @@
             </nav>
             <div id="wrapper">
                 <div class="row justify-content-center">
-                    <div class="col-2">
+                    <div class="col-10 col-sm-6 col-md-5 col-lg-5 col-xl-3">
                         <h3 class="text-white m-3">Register Now</h3>
                         <div class="bg-dark text-white p-3 rounded">
                             <form action="/create_user" method="POST">
@@ -75,7 +75,7 @@
                             </form>
                         </div>
                     </div>
-                    <div class="col-2 ml-5">
+                    <div class="col-10 col-sm-6 col-md-5 col-lg-5 col-xl-3">
                         <h3 class="text-white m-3">Login</h3>
                         <div class="bg-dark text-white p-3 rounded">
                             <form action="/login" method="POST">
