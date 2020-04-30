@@ -236,11 +236,12 @@ def write_comment(video_id):
 
     if is_valid:
         mysql = connectToMySQL("uber_vidz")
-        query = "INSERT into comments(content, user_id, created_at, updated_at) VALUES (%(cc)s, %(u_id)s, NOW(), NOW());"
+        query = "INSERT into comments(content, user_id, created_at, updated_at) VALUES (%(cc)s, %(u_id)s, NOW(), NOW()) WHERE video_id = %(video_id)s;"
 
         data = {
             "cc": request.form['comment'],
             "u_id": session['user_id'],
+            "video_id": video_id
         }
         mysql.query_db(query, data)
         
