@@ -12,10 +12,10 @@
         <div class="container-fluid">
             <nav class="navbar navbar-expand-md navbar-dark bg-dark">
                 <a class="navbar-brand" href="/"><h1>Uber<span>Vidz</span></h1></a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse">
+                <div class="collapse navbar-collapse" id="navbarToggler">
                     <ul class="navbar-nav ml-auto">
                         {% if session['user_id'] %}
                         <li class="nav-item">
@@ -45,15 +45,15 @@
                 </div>
             </nav>
             <div class="row" id="main_content">
-                <div class="col-3" id="comments">  
+                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-3" id="comments">  
                     <h4>Have any comments or concerns? Feel free to contact us below and we'll respond back as soon as possible!</h4>
                     <form action="/leave_comments" method="POST">
                         <p>First Name: <input class="form-control w-50" type="text" name="fname"></p>
                         <p>Last Name: <input class="form-control w-50" type="text" name="lname"></p>
                         <p>Email: <input class="form-control w-50" type="text" name="email"></p>
-                        <p>Comments: <textarea class="form-control w-100" type="text" name="content"></textarea>
+                        <p>Comments: <textarea id="write_comment" class="form-control w-100" type="text" name="content"></textarea>
                         <hr class="border-light">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary mb-3">Submit</button>
                         {% with messages = get_flashed_messages() %}
                             {% if messages %}                            
                                 {% for message in messages %}            
@@ -63,13 +63,13 @@
                         {% endwith %}
                     </form>
                 </div>
-                <div class="col-3">
+                <div class="col-sm-10 col-md-5 col-lg-5 col-xl-3 p-0">
                     <div id="map"></div>
                 </div>
-                <div class="col-3">
+                <div class="col-sm-10 col-md-5 col-lg-5 col-xl-3 p-0">
                     <img src="/static/images/brick_building.jpg" alt="Our building" id="building">
                 </div>
-                <div class="col-3">
+                <div class="col-sm-10 col-md-5 col-lg-5 col-xl-3 p-0">
                     <img src="/static/images/milwaukee.jpg" alt="Our city" id="city">
                 </div>
             </div>
@@ -87,6 +87,8 @@
                 </div>
             </div>
         </div>
+        <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+        <script src="/static/styles/bootstrap-4.1.3-dist/js/bootstrap.min.js"></script>
         <script src="https://use.fontawesome.com/releases/v5.5.0/js/all.js"></script>
     </body>
     <script>

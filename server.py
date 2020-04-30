@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, flash, url_for, send_from_directory
+from flask import Flask, render_template, request, redirect, session, flash, url_for, send_from_directory, jsonify
 from flask_bcrypt import Bcrypt
 from datetime import datetime
 import re
@@ -21,7 +21,11 @@ def main():
     query = "SELECT videos.id_videos, videos.name, videos.pathway, videos.user_id, videos.created_at, users.first_name, users.last_name FROM videos JOIN users on videos.user_id = users.id_users ORDER BY created_at DESC;"
     all_pathways = mysql.query_db(query)
 
-    return render_template("main.html", all_pathways = all_pathways)
+    mysql = connectToMySQL("uber_vidz")
+    query = "SELECT * FROM users;"
+    all_users = mysql.query_db(query)
+
+    return render_template("main.html", all_pathways = all_pathways, all_users = all_users)
 
 @app.route('/about')
 def about():
@@ -92,16 +96,17 @@ def create_user():
     if is_valid:
         mysql = connectToMySQL("uber_vidz")
         pw_hash = bcrpyt.generate_password_hash(request.form['pass'])
-        query = "INSERT into users(first_name, last_name, email, password, created_at, updated_at) VALUES (%(fname)s, %(lname)s, %(email)s, %(password_hash)s, NOW(), NOW());"
+        query = "INSERT into users(first_name, last_name, bio, email, password, created_at, updated_at) VALUES (%(fname)s, %(lname)s, %(bio)s, %(email)s, %(password_hash)s, NOW(), NOW());"
 
         data = {
             "fname": request.form['fname'],
             "lname": request.form['lname'],
+            "bio": "",
             "email": request.form['email'],
             "password_hash": pw_hash
         }
         result_id = mysql.query_db(query, data)
-        flash("Successfully added:{}".format(result_id))
+        flash("Successfully added:{}".format(result_id[1].fname))
         return redirect("/landing")
     return redirect("/registration")
 
@@ -124,7 +129,7 @@ def dashboard_page():
         return redirect("/registration")
 
     mysql = connectToMySQL("uber_vidz")
-    query = "SELECT users.first_name, users.last_name FROM users WHERE id_users = %(uid)s"
+    query = "SELECT users.first_name, users.last_name, users.bio FROM users WHERE id_users = %(uid)s"
     data = {
         'uid': session['user_id']
     }
@@ -169,6 +174,19 @@ def upload_file():
             return redirect(request.url)
         
     return redirect('/landing')
+
+@app.route('/update_bio', methods=['POST'])
+def update_bio():
+    mysql = connectToMySQL("uber_vidz")
+    query = "UPDATE users SET bio = %(bio)s WHERE id_users = %(u_id)s"
+
+    data = {
+        "bio": request.form['bio'],
+        "u_id": session['user_id']
+    }
+    mysql.query_db(query,data)
+
+    return jsonify({'result': 'success'})
 
 @app.route('/video_page/<video_id>')
 def video_page(video_id):
@@ -275,6 +293,21 @@ def leave_comments():
     
     flash("Thank you for your feedback!")
     return redirect("/contact")
+
+@app.route('/user_profile/<user_id>')
+def user_profile(user_id):
+    mysql = connectToMySQL("uber_vidz")
+    query = "SELECT * FROM users WHERE id_users = %(u_id)s;"
+    data = {
+        'u_id': user_id
+    }
+    user_data = mysql.query_db(query,data)
+
+    mysql = connectToMySQL("uber_vidz")
+    query = "SELECT videos.name, videos.pathway, videos.user_id, users.first_name, users.last_name FROM videos JOIN users on videos.user_id = users.id_users;"
+    all_pathways = mysql.query_db(query,data)
+
+    return render_template("profile.html", user_data = user_data[0], all_pathways=all_pathways)
 
 @app.route('/logout')
 def logout():

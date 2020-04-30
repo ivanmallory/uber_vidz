@@ -39,30 +39,41 @@
                 </div>
             </nav>
             <div class="row m-1">
-                <h2 class="text-primary">Ivan Mallory</h2>
+                <h2 class="text-primary">{{user_data['first_name']}} {{user_data['last_name']}}'s Profile</h2>
             </div>
-            <hr>
-            <div class="jumbotron">
+            <hr style="height: 2px; color: grey; background-color: grey;">
+            <div class="jumbotron bg-dark text-white">
                 <div class="row m-1">
                     <div class="col-10">
-                        <h3>Ivan Mallory's Bio</h3>
-                        <p class="bio">Hi there! My name is Ivan Mallory and I am a musician from Milwaukee, Wisconsin.  When I'm not coding, I enjoy playing guitar and writing music with my band Amberstein.  If you ever want to talk about music or code, hit me up!</p>
-                        <h3 class="title">Ivan's Videos</h3>
+                        <div class="col-10">
+                            <h3>{{user_data['first_name']}} {{user_data['last_name']}}'s Bio:</h3>
+                            <div class="card mt-3 w-50 text-dark">
+                                <div class="card-body" id="bio-body">
+                                    {% if user_data['bio'] %}
+                                        <p class="lead">{{user_data['bio']}}</p>
+                                    {% else %}
+                                        <p class="lead">User hasn't uploaded a bio yet =(</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <hr style="height: 2px; color: grey; background-color: grey;">
+                            <h3 class="title">{{user_data['first_name']}} {{user_data['last_name']}}'s Videos</h3>
+                        </div>
                     </div>
                 </div>
                 <div class="row m-1">
                     {% for pathway in all_pathways %}
-                        {% if pathway['user_id'] == session['user_id'] %}
+                        {% if pathway['user_id'] == user_data['id_users'] %}
                         <div class="col-2">
                             <video width="340" height="240" controls="autoplay">
                                 <source src="/static/videos/{{pathway.pathway}}" type="video/mp4">
                             </video>
-                            <h4><a class="text-decoration-none text-dark" href="/video_page/{{pathway.pathway}}">{{pathway.name}}</a></h4>
+                            <h4><a href="/video_page/{{pathway.pathway}}" class="text-decoration-none text-white">{{pathway.name}}</a></h4>
                         </div>
                         {% endif %}
                     {% endfor %}
                 </div>
-                <hr>
+                <hr style="height: 2px; color: grey; background-color: grey;">
             </div>
         </div>
     </body>
