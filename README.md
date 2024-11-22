@@ -1,4 +1,4 @@
-# uber_vidz
+# Uber Vidz
 
 Developed a community driven video platform where users can upload videos and follow other registered users
 
